@@ -1,0 +1,62 @@
+services:
+  auth-service:
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: auth-service
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    ports:
+      - "8000:8000"
+    networks:
+      - traefik-net
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.auth-service.rule=Host(`karpov1.duckdns.org`) && PathPrefix(`/api/v1`)"
+      - "traefik.http.routers.auth-service.entrypoints=websecure"
+      - "traefik.http.routers.auth-service.tls.certresolver=letsencrypt"
+      - "traefik.http.services.auth-service.loadbalancer.server.port=8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/auth/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  auth-service-worker:
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: auth-service-worker
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      - PYTHONPATH=/app/src
+    command: ["python", "-m", "taskiq", "worker", "core.taskiq.taskiq_client:broker", "tasks.send_email"]
+    networks:
+      - internal
+    depends_on:
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  migrate:
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    container_name: auth-service-migrate
+    restart: "no"
+    env_file:
+      - .env.prod
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+    networks:
+      - internal
+
+networks:
+  traefik-net:
+    external: true
+  internal:
+    external: true
