@@ -17,8 +17,11 @@ down_revision: Union[str, None] = "0001"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+SCHEMA = "auth_schema"
 
 def upgrade() -> None:
+    op.execute(sa.schema.CreateSchema(SCHEMA, if_not_exists=True))
+
     op.create_table(
         "refresh_tokens",
         sa.Column("id", sa.Integer(), nullable=False),

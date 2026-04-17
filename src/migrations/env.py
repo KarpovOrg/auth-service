@@ -38,6 +38,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         include_schemas=True,
+        version_table="auth_service_alembic_version",
     )
     with context.begin_transaction():
         context.run_migrations()
@@ -49,6 +50,7 @@ def do_run_migrations(connection) -> None:
         target_metadata=target_metadata,
         compare_type=True,
         include_schemas=True,
+        version_table="auth_service_alembic_version",
     )
     with context.begin_transaction():
         context.run_migrations()
