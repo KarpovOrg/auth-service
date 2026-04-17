@@ -14,8 +14,6 @@ ENV_PATH = BASE_DIR / ".env"
 class AppConfig(BaseModel):
     app_name: str
     debug: bool
-    host: str
-    port: int
 
 
 class ApiV1Prefix(BaseModel):
