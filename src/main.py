@@ -9,6 +9,7 @@ from core.config import settings
 from core.handlers import app_exception_handler
 
 from core.lifespan import lifespan
+
 from exceptions import AppException
 
 
