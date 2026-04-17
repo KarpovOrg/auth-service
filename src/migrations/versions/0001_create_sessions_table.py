@@ -23,16 +23,9 @@ SCHEMA = "auth_schema"
 def upgrade() -> None:
     op.execute(sa.schema.CreateSchema(SCHEMA, if_not_exists=True))
 
-    device_type_enum = postgresql.ENUM(
-        "desktop",
-        "mobile",
-        "tablet",
-        "unknown",
-        name="devicetype",
-        schema="auth_schema",
-        create_type=False,
+    op.execute(
+        "CREATE TYPE auth_schema.devicetype AS ENUM ('desktop', 'mobile', 'tablet', 'unknown')"
     )
-    device_type_enum.create(op.get_bind(), checkfirst=True)
 
     op.create_table(
         "sessions",
@@ -74,12 +67,7 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_auth_schema_sessions_id"), table_name="sessions", schema="auth_schema")
     op.drop_table("sessions", schema="auth_schema")
 
-    device_type_enum = postgresql.ENUM(
-        name="devicetype",
-        schema="auth_schema",
-        create_type=False,
-    )
-    device_type_enum.drop(op.get_bind(), checkfirst=True)
+    op.execute("DROP TYPE IF EXISTS auth_schema.devicetype")
 
     op.execute("DROP SCHEMA IF EXISTS auth_schema CASCADE")
 
