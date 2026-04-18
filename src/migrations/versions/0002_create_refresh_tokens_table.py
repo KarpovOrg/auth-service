@@ -27,6 +27,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("session_id", sa.Integer(), nullable=False),
         sa.Column("token_hash", sa.String(), nullable=False),
         sa.Column("expires_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("revoked", sa.Boolean(), nullable=False),
@@ -36,14 +37,22 @@ def upgrade() -> None:
             name=op.f("fk_refresh_tokens_user_id_users"),
             ondelete="CASCADE",
         ),
+        sa.ForeignKeyConstraint(
+            ["session_id"],
+            ["auth_schema.sessions.id"],
+            name=op.f("fk_refresh_tokens_session_id_sessions"),
+            ondelete="CASCADE",
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_refresh_tokens")),
         schema="auth_schema",
     )
     op.create_index(op.f("ix_auth_schema_refresh_tokens_id"), "refresh_tokens", ["id"], unique=False, schema="auth_schema")
     op.create_index(op.f("ix_auth_schema_refresh_tokens_user_id"), "refresh_tokens", ["user_id"], unique=False, schema="auth_schema")
+    op.create_index(op.f("ix_auth_schema_refresh_tokens_session_id"), "refresh_tokens", ["session_id"], unique=False, schema="auth_schema")
 
 
 def downgrade() -> None:
+    op.drop_index(op.f("ix_auth_schema_refresh_tokens_session_id"), table_name="refresh_tokens", schema="auth_schema")
     op.drop_index(op.f("ix_auth_schema_refresh_tokens_user_id"), table_name="refresh_tokens", schema="auth_schema")
     op.drop_index(op.f("ix_auth_schema_refresh_tokens_id"), table_name="refresh_tokens", schema="auth_schema")
     op.drop_table("refresh_tokens", schema="auth_schema")
