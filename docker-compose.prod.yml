@@ -13,7 +13,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-net"
-      - "traefik.http.routers.auth-service.rule=Host(`karpov1.duckdns.org`) && PathPrefix(`/api/v1`)"
+      - "traefik.http.routers.auth-service.rule=Host(`karpov1.duckdns.org`) && PathPrefix(`/api/v1/auth`)"
       - "traefik.http.routers.auth-service.entrypoints=websecure"
       - "traefik.http.routers.auth-service.tls.certresolver=letsencrypt"
       - "traefik.http.services.auth-service.loadbalancer.server.port=8000"
