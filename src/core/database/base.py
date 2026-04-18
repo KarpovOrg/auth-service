@@ -17,6 +17,11 @@ class BaseDatabaseClient:
         self.engine: AsyncEngine = create_async_engine(
             url=url,
             echo=echo,
+            connect_args={
+                "server_settings": {
+                    "search_path": "auth_schema,users_schema,public",
+                },
+            },
         )
 
         self.session_factory: async_sessionmaker[AsyncSession] = (

@@ -29,6 +29,8 @@ class Session(Base, IdMixin, UidMixin, CreatedAtMixin):
     device_type: Mapped[str] = mapped_column(
         ENUM(
             DeviceType,
+            name="devicetype",
+            schema="auth_schema",
             create_type=False,
             values_callable=lambda x: [e.value for e in x],
         )
