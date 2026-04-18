@@ -186,7 +186,7 @@ class AuthService:
         await self.uow.commit()
 
         try:
-            await send_email_confirmation.async_task(
+            await send_email_confirmation.kiq(
                 email_to=user.email,
                 otp_code=otp_code,
             )
