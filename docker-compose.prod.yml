@@ -32,18 +32,12 @@ services:
       - .env.prod
     environment:
       - PYTHONPATH=/app/src
+    working_dir: /app/src
     command: ["python", "-m", "taskiq", "worker", "core.taskiq.taskiq_client:broker", "tasks.send_email"]
     networks:
       - internal
     depends_on:
-      auth-service:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
+      - migrate
 
   migrate:
     image: ${IMAGE_NAME}:${IMAGE_TAG}
