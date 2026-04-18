@@ -39,10 +39,12 @@ class BaseRedisClient:
 
         data = await self.redis.get(key)
         if data:
-            try:
-                return json.loads(data)
-            except json.JSONDecodeError:
-                return data
+            if isinstance(data, str) and data and data[0] in ('{', '['):
+                try:
+                    return json.loads(data)
+                except json.JSONDecodeError:
+                    return data
+            return data
         return None
 
     async def set(

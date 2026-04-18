@@ -130,7 +130,7 @@ jobs:
             # Перезапускаем воркер с новым образом
             IMAGE_NAME=${{ env.IMAGE_NAME }} \
             IMAGE_TAG=sha-$(echo ${{ github.sha }} | cut -c1-7) \
-              docker compose -f docker-compose.prod.yml up -d --no-deps worker
+              docker compose -f docker-compose.prod.yml up -d --no-deps auth-service-worker
 
             # Ждём старта контейнера
             sleep 5
