@@ -56,4 +56,3 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_auth_schema_refresh_tokens_user_id"), table_name="refresh_tokens", schema="auth_schema")
     op.drop_index(op.f("ix_auth_schema_refresh_tokens_id"), table_name="refresh_tokens", schema="auth_schema")
     op.drop_table("refresh_tokens", schema="auth_schema")
-
