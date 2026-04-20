@@ -2,6 +2,8 @@ import uvicorn
 
 from fastapi import FastAPI
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
 from api import api_router
 
 from core.config import settings
@@ -23,6 +25,9 @@ def create_app() -> FastAPI:
         AppException,
         app_exception_handler,
     )
+
+    Instrumentator().instrument(app).expose(app)
+
     return app
 
 
