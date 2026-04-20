@@ -26,7 +26,13 @@ def create_app() -> FastAPI:
         app_exception_handler,
     )
 
-    Instrumentator().instrument(app).expose(app)
+    Instrumentator(
+        should_group_status_codes=True,
+        excluded_handlers=["/metrics"],
+    ).instrument(
+        app,
+        app_name=settings.app.app_name,
+    ).expose(app)
 
     return app
 
